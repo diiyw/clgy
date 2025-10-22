@@ -1,0 +1,26 @@
+function init(self)
+	msg.post(".", "acquire_input_focus")
+	msg.post("/entry#entry_proxy", "acquire_input_focus")
+	-- msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+end
+
+function on_input(self, action_id, action)
+
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id == hash("start") then
+		print("on_message: start")
+		msg.post("/entry#entry_proxy", "async_load")
+	elseif message_id == hash("proxy_loaded") then
+		msg.post("#", "unload")
+		msg.post("/gui", "disable")
+		msg.post(sender, "enable")
+	elseif message_id == hash("proxy_unloaded") then
+		print("Unloaded", sender)
+	end
+end
+
+function update(self, dt)
+	
+end

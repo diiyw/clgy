@@ -1,0 +1,61 @@
+images {
+  image: "/assets/bg.jpg"
+}
+images {
+  image: "/assets/theme0/block_1.png"
+}
+images {
+  image: "/assets/theme0/block_2.png"
+}
+images {
+  image: "/assets/theme0/block_3.png"
+}
+images {
+  image: "/assets/theme0/block_4.png"
+}
+images {
+  image: "/assets/theme0/block_5.png"
+}
+images {
+  image: "/assets/theme0/block_6.png"
+}
+images {
+  image: "/assets/theme0/block_7.png"
+}
+images {
+  image: "/assets/theme0/block_8.png"
+}
+images {
+  image: "/assets/theme0/block_9.png"
+}
+images {
+  image: "/assets/theme0/block_10.png"
+}
+images {
+  image: "/assets/theme0/block_11.png"
+}
+images {
+  image: "/assets/theme0/block_12.png"
+}
+images {
+  image: "/assets/theme0/block_13.png"
+}
+images {
+  image: "/assets/theme0/block_14.png"
+}
+images {
+  image: "/assets/theme0/block_15.png"
+}
+images {
+  image: "/assets/theme0/block_16.png"
+}
+images {
+  image: "/assets/theme0/block_bg.png"
+}
+images {
+  image: "/assets/bg_2.jpg"
+}
+images {
+  image: "/assets/slot.png"
+}
+extrude_borders: 2

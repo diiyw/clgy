@@ -1,0 +1,37 @@
+go.property("block", hash("block_1"))
+
+function init(self)
+	-- Add initialization code here
+	-- Learn more: https://defold.com/manuals/script/
+	-- Remove this function if not needed
+	sprite.play_flipbook("#el", self.block)
+end
+
+local function move(receiver, to_x, speed)
+	local pos = go.get_position()
+	local to = vmath.vector3(to_x, 150, 0)
+	local distance = pos.y - to.y
+	local speed = speed
+	local duration = distance / speed
+	go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, to, go.EASING_INOUTCUBIC, duration, 0, function()
+		-- 移动完成后，将块添加到槽位实例数组中
+		msg.post(receiver, hash("block_move_end"))
+	end)
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Learn more: https://defold.com/manuals/message-passing/
+	-- Remove this function if not needed
+	if message_id == hash("block_move") then
+		print(self.block .. " moving: ", message.to_x, message.speed)
+		move(sender, message.to_x, message.speed)
+	end
+	if message_id == hash("block_remove") then
+		print(msg.url("."))
+		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(), go.EASING_INOUTCUBIC, 0.5, 0, function()
+			go.delete(".")
+			msg.post(sender, hash("block_remove_end"), message)
+		end)
+	end
+end

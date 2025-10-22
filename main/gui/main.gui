@@ -1,0 +1,41 @@
+script: "/main/scripts/gui/start.gui_script"
+fonts {
+  name: "Metropolis-Regular"
+  font: "/assets/Metropolis-Regular.font"
+}
+nodes {
+  position {
+    x: 400.0
+    y: 200.0
+  }
+  size {
+    x: 300.0
+    y: 100.0
+  }
+  type: TYPE_BOX
+  id: "start_btn"
+  inherit_alpha: true
+  size_mode: SIZE_MODE_AUTO
+}
+nodes {
+  position {
+    x: 400.0
+    y: 200.0
+  }
+  size {
+    x: 300.0
+    y: 100.0
+  }
+  color {
+    x: 0.141
+    y: 0.39
+    z: 0.809
+  }
+  type: TYPE_TEXT
+  text: "Start"
+  font: "Metropolis-Regular"
+  id: "text"
+  inherit_alpha: true
+}
+material: "/builtins/materials/gui.material"
+adjust_reference: ADJUST_REFERENCE_PARENT

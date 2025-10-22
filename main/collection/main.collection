@@ -1,0 +1,46 @@
+name: "main"
+scale_along_z: 0
+embedded_instances {
+  id: "bg"
+  data: "components {\n"
+  "  id: \"main\"\n"
+  "  component: \"/main/scripts/main.script\"\n"
+  "}\n"
+  "embedded_components {\n"
+  "  id: \"background\"\n"
+  "  type: \"sprite\"\n"
+  "  data: \"default_animation: \\\"bg\\\"\\n"
+  "material: \\\"/builtins/materials/sprite.material\\\"\\n"
+  "textures {\\n"
+  "  sampler: \\\"texture_sampler\\\"\\n"
+  "  texture: \\\"/assets/main.atlas\\\"\\n"
+  "}\\n"
+  "\"\n"
+  "  position {\n"
+  "    z: -0.5\n"
+  "  }\n"
+  "}\n"
+  ""
+  position {
+    x: 375.0
+    y: 812.0
+  }
+}
+embedded_instances {
+  id: "gui"
+  data: "components {\n"
+  "  id: \"main\"\n"
+  "  component: \"/main/gui/main.gui\"\n"
+  "}\n"
+  ""
+}
+embedded_instances {
+  id: "entry"
+  data: "embedded_components {\n"
+  "  id: \"entry_proxy\"\n"
+  "  type: \"collectionproxy\"\n"
+  "  data: \"collection: \\\"/main/collection/entry.collection\\\"\\n"
+  "\"\n"
+  "}\n"
+  ""
+}

@@ -34,7 +34,7 @@ nodes {
   type: TYPE_TEXT
   text: "Start"
   font: "Metropolis-Regular"
-  id: "text"
+  id: "start_text"
   inherit_alpha: true
 }
 material: "/builtins/materials/gui.material"

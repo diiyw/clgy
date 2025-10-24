@@ -3,6 +3,8 @@ function init(self)
 	self.instances = build_board()
 	self.slot_instances = {}
 	self.remove = 0
+	self.gameState = 0;
+	msg.post("entry:/go#game_end", "acquire_input_focus")
 end
 
 function build_board()
@@ -32,15 +34,23 @@ end
 function remove_blocks(self, start_index, count)
 	self.remove = 3
 	print("删除 " .. count .. " 个方块，从位置 " .. start_index .. " 开始")
-
-	-- 删除方块实例
-	for i = start_index, start_index + count - 1 do
-		msg.post(self.slot_instances[i], hash("block_remove"), { start_index = start_index })
-	end
-
 	-- 从数组中移除
 	for i = 1, count do
 		table.remove(self.slot_instances, start_index)
+	end
+	-- 删除方块实例
+	for i = start_index, start_index + count - 1 do
+		msg.post(self.slot_instances[i], hash("block_go_remove"), { start_index = start_index })
+	end
+end
+
+-- 检查游戏是否结束
+function check_game_end(self)
+	if self.remove == 0 and #self.slot_instances >= 7 then
+		print("游戏结束！槽位已满，游戏失败！")
+		self.gameState = 1
+		-- 显示游戏结束界面
+		msg.post("/go#game_end", "enable")
 	end
 end
 
@@ -78,39 +88,49 @@ function check_and_remove_matches(self)
 	return false
 end
 
+-- 将点击的方块插入到槽位中
+function insert_block_to_slot(self, clicked_instance)
+	local clicked_block_hash = go.get(clicked_instance, "block")
+
+	-- 查找相同元素的最后位置
+	local insert_index = #self.slot_instances + 1 -- 默认插入到末尾
+	for i, instance in ipairs(self.slot_instances) do
+		local block_hash = go.get(instance, "block")
+		if block_hash == clicked_block_hash then
+			insert_index = i + 1
+		end
+	end
+
+	-- 在找到的位置插入元素
+	table.insert(self.slot_instances, insert_index, clicked_instance)
+
+	-- 更新从插入位置开始的所有元素的坐标
+	for i = insert_index, #self.slot_instances do
+		local target_x = i * 96
+		if i == insert_index then
+			-- 新插入的元素使用动画移动
+			msg.post(self.slot_instances[i], hash("block_move"), { to_x = target_x, speed = 2500 })
+		else
+			-- 其他元素直接更新位置
+			local pos = go.get_position(self.slot_instances[i])
+			pos.x = target_x
+			go.set_position(pos, self.slot_instances[i])
+		end
+	end
+end
+
 function on_message(self, message_id, message, sender)
 	if message_id == hash("instance_clicked") then
 		local clicked_instance = msg.url(nil, message.instance, "block")
-		local clicked_block_hash = go.get(clicked_instance, "block")
-
-		-- 查找相同元素的最后位置
-		local insert_index = #self.slot_instances + 1 -- 默认插入到末尾
-		for i, instance in ipairs(self.slot_instances) do
-			local block_hash = go.get(instance, "block")
-			if block_hash == clicked_block_hash then
-				insert_index = i + 1
-			end
-		end
-
-		-- 在找到的位置插入元素
-		table.insert(self.slot_instances, insert_index, clicked_instance)
-
-		-- 更新从插入位置开始的所有元素的坐标
-		for i = insert_index, #self.slot_instances do
-			local target_x = i * 96
-			if i == insert_index then
-				-- 新插入的元素使用动画移动
-				msg.post(self.slot_instances[i], hash("block_move"), { to_x = target_x, speed = 2500 })
-			else
-				-- 其他元素直接更新位置
-				local pos = go.get_position(self.slot_instances[i])
-				pos.x = target_x
-				go.set_position(pos, self.slot_instances[i])
-			end
-		end
+		insert_block_to_slot(self, clicked_instance)
 	end
 	if message_id == hash("block_remove") then
 		remove_blocks(self, message.match_start, message.match_count)
+	end
+	if message_id == hash("block_move_end") then
+		-- 检查是否有3个或以上相同类型的方块需要消除
+		check_and_remove_matches(self)
+		check_game_end(self)
 	end
 	if message_id == hash("block_remove_end") then
 		self.remove = self.remove - 1
@@ -122,16 +142,13 @@ function on_message(self, message_id, message, sender)
 				pos.x = target_x
 				go.set_position(pos, self.slot_instances[i])
 			end
+			check_game_end(self)
 		end
-	end
-	if message_id == hash("block_move_end") then
-		-- 检查是否有3个或以上相同类型的方块需要消除
-		check_and_remove_matches(self)
 	end
 end
 
 function on_input(self, action_id, action)
-	if action_id == hash("touch") and action.released then
+	if self.gameState == 0 and action_id == hash("touch") and action.released then
 		for i, instance in ipairs(self.instances) do
 			-- Check if instance is valid before getting position
 			local success, pos = pcall(go.get_position, instance)

@@ -27,10 +27,11 @@ function on_message(self, message_id, message, sender)
 		print(self.block .. " moving: ", message.to_x, message.speed)
 		move(sender, message.to_x, message.speed)
 	end
-	if message_id == hash("block_remove") then
+	if message_id == hash("block_go_remove") then
 		print(msg.url("."))
 		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(), go.EASING_INOUTCUBIC, 0.5, 0, function()
-			go.delete(".")
+			-- go.delete(".")
+			msg.post(".", "disable")
 			msg.post(sender, hash("block_remove_end"), message)
 		end)
 	end

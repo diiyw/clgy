@@ -1,8 +1,9 @@
 function init(self)
 	msg.post(".", "acquire_input_focus")
 	self.instances = build_board()
+	-- 槽位实例
 	self.slot_instances = {}
-	self.remove = 0
+	self.removingBlocks = 0
 end
 
 function build_board()
@@ -30,7 +31,7 @@ end
 
 -- 删除指定范围的方块
 function remove_blocks(self, start_index, count)
-	self.remove = 3
+	self.removingBlocks = 3
 	print("删除 " .. count .. " 个方块，从位置 " .. start_index .. " 开始")
 
 	-- 删除方块实例
@@ -46,9 +47,8 @@ end
 
 -- 检查游戏是否结束
 function check_game_end(self)
-	if self.remove == 0 and #self.slot_instances >= 7 then
+	if self.removingBlocks == 0 and #self.slot_instances >= 7 then
 		print("游戏结束！槽位已满，游戏失败！")
-		self.gameState = 1
 		-- 显示游戏结束界面
 		msg.post("/go#game_end", "enable")
 	end
@@ -123,8 +123,8 @@ function on_message(self, message_id, message, sender)
 		end
 	end
 	if message_id == hash("on_block_remove_end") then
-		self.remove = self.remove - 1
-		if self.remove == 0 then
+		self.removingBlocks = self.removingBlocks - 1
+		if self.removingBlocks == 0 then
 			-- 重新调整剩余方块的位置
 			for i = message.start_index, #self.slot_instances do
 				local target_x = i * 96
@@ -149,6 +149,7 @@ function on_input(self, action_id, action)
 						print("点击位置: ", action.x, action.y, "元素: ", instance)
 						-- Remove clicked instance from the board instances
 						table.remove(self.instances, i)
+						self.animatingBlocks = self.animatingBlocks + 1
 						local clicked_instance = msg.url(nil, instance, "block")
 						insert_block_to_slot(self, clicked_instance)
 						break

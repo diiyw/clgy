@@ -18,9 +18,18 @@ function on_message(self, message_id, message, sender)
 		msg.post(sender, "enable")
 	elseif message_id == hash("proxy_unloaded") then
 		print("Unloaded", sender)
+		-- If we're restarting, reload the proxy
+		if self.restarting then
+			self.restarting = false
+			msg.post("/entry#entry_proxy", "async_load")
+		end
+	elseif message_id == hash("restart_game") then
+		print("Restarting game...")
+		self.restarting = true
+		msg.post("/entry#entry_proxy", "unload")
 	end
 end
 
 function update(self, dt)
-	
+
 end

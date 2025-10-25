@@ -1,3 +1,4 @@
+script: "/main/scripts/gui/game_end.gui_script"
 fonts {
   name: "Metropolis-Regular"
   font: "/assets/Metropolis-Regular.font"

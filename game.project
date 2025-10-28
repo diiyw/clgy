@@ -13,7 +13,6 @@ width = 750
 height = 1624
 high_dpi = 1
 fullscreen = 0
-display_device_info = 1
 
 [ios]
 app_icon_57x57 = /assets/app_icons/icon_57.png

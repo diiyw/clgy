@@ -100,22 +100,31 @@ function insert_block_to_slot(self, clicked_instance)
 			insert_index = i + 1
 		end
 	end
+
+	table.insert(self.slot_instances, insert_index, clicked_instance)
+
 	-- 新插入的元素使用动画移动
 	local target_x = insert_index * 96
 	msg.post(clicked_instance, hash("block_move"),
 		{ to_x = target_x, speed = 2500, insert_index = insert_index, instance = clicked_instance })
 
 	-- 更新从插入位置开始的所有元素的坐标
-	for i = insert_index, #self.slot_instances do
-		local pos = go.get_position(self.slot_instances[i])
-		pos.x = (i + 1) * 96
-		go.set_position(pos, self.slot_instances[i])
+	for i = insert_index + 1, #self.slot_instances do
+		local moving = go.get(self.slot_instances[i], "moving")
+		if moving ~= true then
+			local pos = go.get_position(self.slot_instances[i])
+			pos.x = i * 96
+			go.set_position(pos, self.slot_instances[i])
+		else
+			-- 新移动方向
+			msg.post(clicked_instance, hash("block_move"),
+				{ to_x = target_x, speed = 2500, insert_index = i, instance = self.slot_instances[i] })
+		end
 	end
 end
 
 function on_message(self, message_id, message, sender)
 	if message_id == hash("on_block_move_end") then
-		table.insert(self.slot_instances, message.insert_index, message.instance)
 		-- 其他元素直接更新位置
 		-- 检查是否有3个或以上相同类型的方块需要消除
 		if on_block_move_end(self) ~= true then
@@ -149,7 +158,6 @@ function on_input(self, action_id, action)
 						print("点击位置: ", action.x, action.y, "元素: ", instance)
 						-- Remove clicked instance from the board instances
 						table.remove(self.instances, i)
-						self.animatingBlocks = self.animatingBlocks + 1
 						local clicked_instance = msg.url(nil, instance, "block")
 						insert_block_to_slot(self, clicked_instance)
 						break

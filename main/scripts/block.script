@@ -1,5 +1,4 @@
 go.property("block", hash("block_1"))
-go.property("moving", false)
 
 function init(self)
 	-- Add initialization code here
@@ -14,10 +13,8 @@ local function move(self, receiver, message)
 	local distance = pos.y - to.y
 	local speed = message.speed
 	local duration = distance / speed
-	self.moving = true
 	go.animate(".", "position", go.PLAYBACK_ONCE_FORWARD, to, go.EASING_INOUTCUBIC, duration, 0, function()
 		-- 移动完成后，将块添加到槽位实例数组中
-		self.moving = false
 		msg.post(receiver, hash("on_block_move_end"), message)
 	end)
 end
@@ -32,8 +29,8 @@ function on_message(self, message_id, message, sender)
 	end
 	if message_id == hash("block_remove") then
 		go.animate(".", "scale", go.PLAYBACK_ONCE_FORWARD, vmath.vector3(), go.EASING_INOUTCUBIC, 0.5, 0, function()
-			-- go.delete(".")
 			msg.post(".", "disable")
+			go.delete(".")
 			msg.post(sender, hash("on_block_remove_end"), message)
 		end)
 	end
